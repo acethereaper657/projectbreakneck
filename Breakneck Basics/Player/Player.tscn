@@ -55,7 +55,6 @@ floor_snap_length = 16.0
 script = ExtResource("1")
 acceleration = 4032.0
 turning_acceleration = 13440.0
-deceleration = 4480.0
 jump_force = 1200.0
 jump_cut = 0.4
 jump_gravity_max = 1000.0

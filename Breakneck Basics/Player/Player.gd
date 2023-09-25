@@ -15,8 +15,8 @@ var x_dir := 1
 @export var max_speed: float = 1250
 @export var ground_max_speed: float = 750 #was 560
 @export var acceleration: float = 100 #was 2880
-@export var turning_acceleration : float = 10 #was 9600
-@export var deceleration: float = 10 #was 3200
+@export var turning_acceleration : float = 0.000000000000001 #was 9600 (this definitely doesn't work right atm)
+#@export var deceleration: float = 0.000001 #was 3200
 # ------------------------------------------ #
 
 # GRAVITY ----- #
@@ -66,24 +66,28 @@ func x_movement(delta: float) -> void:
 	x_dir = get_input()["x"]
 	
 	# Stop if we're not doing movement inputs.
-	if x_dir == 0: 
-		velocity.x = Vector2(velocity.x, 0).move_toward(Vector2(0,0), deceleration * delta).x
+	if x_dir == 0 and momentum_timer < 0:
+		velocity.x *= 0.92
+		# velocity.x = Vector2(velocity.x, 0).move_toward(Vector2(0,0), deceleration * delta).x
 		return
 	
 	#Slowly decelerate when on the ground, otherwise keep the same speed
 	# (This keeps our momentum gained from outside or slopes)
-	if momentum_timer < 0 and abs(velocity.x) >= ground_max_speed and sign(velocity.x) == x_dir:
+	if x_dir != 0 and momentum_timer < 0 and abs(velocity.x) >= ground_max_speed and sign(velocity.x) == x_dir:
 		velocity.x *= 0.99
 		return
-	elif momentum_timer > 0 and abs(velocity.x) >= max_speed and sign(velocity.x) == x_dir:
+	elif x_dir != 0 and momentum_timer > 0 and abs(velocity.x) >= max_speed and sign(velocity.x) == x_dir:
 		return
 		
 	# Are we turning?
 	# Deciding between acceleration and turn_acceleration
-	var accel_rate : float = acceleration if sign(velocity.x) == x_dir else turning_acceleration
+	#var accel_rate : float = acceleration if sign(velocity.x) == x_dir else turning_acceleration
 	
 	# Accelerate
-	velocity.x += x_dir * accel_rate * delta
+	if sign(velocity.x) == x_dir:
+		velocity.x += x_dir * acceleration * delta
+	else:
+		velocity.x += x_dir * delta * turning_acceleration
 	
 	set_direction(x_dir) # This is purely for visuals
 
