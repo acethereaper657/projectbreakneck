@@ -7,6 +7,7 @@ extends CharacterBody2D
 ## https://www.youtube.com/watch?v=2S3g8CgBG1g
 ## Except for separate air and ground acceleration, as I don't think it's necessary.
 
+## New test
 
 # BASIC MOVEMENT VARAIABLES ---------------- #
 var face_direction := 1
