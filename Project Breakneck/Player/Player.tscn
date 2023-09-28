@@ -92,4 +92,5 @@ libraries = {
 }
 
 [node name="detectionRay" type="RayCast2D" parent="."]
-collision_mask = 2
+position = Vector2(20, 0)
+collision_mask = 3

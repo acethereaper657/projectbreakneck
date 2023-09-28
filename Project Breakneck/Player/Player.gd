@@ -75,9 +75,11 @@ func x_movement(delta: float) -> void:
 		#var collision_point = ray.get_collision_point()
 		#var distance = origin.distance_to(collision_point)
 		#if(distance > 1 and is_on_floor()):
-		velocity.x -= (delta * sign(velocity.x) * edge_stop)
-		if(abs(velocity.x) < 30):
-			velocity.x = 0
+		if(velocity.x > abs(delta * edge_stop)):
+			velocity.x -= delta * sign(velocity.x) * edge_stop
+		else:
+			velocity.x = 0 
+			
 	
 	
 	

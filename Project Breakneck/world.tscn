@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3 uid="uid://dlxnme8lbu5ci"]
+[gd_scene load_steps=11 format=3 uid="uid://dlxnme8lbu5ci"]
 
 [ext_resource type="Script" path="res://world.gd" id="1_fpu5x"]
 [ext_resource type="Texture2D" uid="uid://3gm72bvyfhbb" path="res://Graphics/Dirt.png" id="1_n20pj"]
@@ -41,6 +41,9 @@ func _process(delta: float) -> void:
 	else:
 		get_tree().set_pause(true)
 "
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wslor"]
+size = Vector2(579, 20)
 
 [node name="World" type="Node2D"]
 script = ExtResource("1_fpu5x")
@@ -104,5 +107,19 @@ offset_bottom = 66.0
 theme_override_font_sizes/font_size = 30
 text = "Timer"
 script = SubResource("GDScript_ory0e")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="."]
+freeze = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D"]
+position = Vector2(1612, 378)
+shape = SubResource("RectangleShape2D_wslor")
+
+[node name="RigidBody2D2" type="RigidBody2D" parent="."]
+freeze = true
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RigidBody2D2"]
+position = Vector2(901, 485)
+shape = SubResource("RectangleShape2D_wslor")
 
 [connection signal="pressed" from="UI/Menu" to="." method="_on_menu_pressed"]
