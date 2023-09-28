@@ -1,0 +1,28 @@
+[gd_scene load_steps=3 format=3 uid="uid://bctwvc5awrfhp"]
+
+[ext_resource type="Script" path="res://MenuScene.gd" id="1_210kh"]
+[ext_resource type="PackedScene" uid="uid://btdhup10w06hs" path="res://BG.tscn" id="2_t35fb"]
+
+[node name="MenuScene" type="Node2D"]
+script = ExtResource("1_210kh")
+
+[node name="Background" parent="." instance=ExtResource("2_t35fb")]
+
+[node name="Menu" type="CanvasLayer" parent="."]
+
+[node name="Resume" type="Button" parent="Menu"]
+offset_left = 537.0
+offset_top = 157.0
+offset_right = 669.0
+offset_bottom = 237.0
+text = "Resume"
+
+[node name="Quit" type="Button" parent="Menu"]
+offset_left = 535.0
+offset_top = 258.0
+offset_right = 671.0
+offset_bottom = 335.0
+text = "Quit"
+
+[connection signal="pressed" from="Menu/Resume" to="." method="_on_resume_pressed"]
+[connection signal="pressed" from="Menu/Quit" to="." method="_on_quit_pressed"]

@@ -90,3 +90,6 @@ polygon = PackedVector2Array(-16, -16, -16, 16, 16, 16, 16, -16)
 libraries = {
 "": SubResource("AnimationLibrary_1lb64")
 }
+
+[node name="detectionRay" type="RayCast2D" parent="."]
+collision_mask = 2

@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://btdhup10w06hs"]
+
+[ext_resource type="Script" path="res://BG.gd" id="1_m1loi"]
+[ext_resource type="Texture2D" uid="uid://bpsyarrvhq56s" path="res://Graphics/Lab Background 1280x800.png.png" id="1_nvsoa"]
+
+[node name="Background" type="ParallaxBackground"]
+script = ExtResource("1_m1loi")
+
+[node name="ParallaxLayer" type="ParallaxLayer" parent="."]
+motion_mirroring = Vector2(1152, 0)
+
+[node name="LabBackground1280x800_png" type="Sprite2D" parent="ParallaxLayer"]
+position = Vector2(577, 323)
+scale = Vector2(0.901563, 0.8125)
+texture = ExtResource("1_nvsoa")

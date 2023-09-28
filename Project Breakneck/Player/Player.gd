@@ -7,17 +7,18 @@ extends CharacterBody2D
 ## https://www.youtube.com/watch?v=2S3g8CgBG1g
 ## Except for separate air and ground acceleration, as I don't think it's necessary.
 
-## New test
-
+@onready var ray = $detectionRay
 # BASIC MOVEMENT VARAIABLES ---------------- #
 var face_direction := 1
 var x_dir := 1
 
 @export var max_speed: float = 1250
 @export var ground_max_speed: float = 750 #was 560
-@export var acceleration: float = 100 #was 2880
-@export var turning_acceleration : float = 0.000000000000001 #was 9600 (this definitely doesn't work right atm)
+@export var acceleration: float = 50 #was 2880
+@export var turning_acceleration : float = 1 #was 9600 (this definitely doesn't work right atm)
 #@export var deceleration: float = 0.000001 #was 3200
+var slide_speed: float = 2000 #higher is less sliding
+var friction: float = 500 #higher is more friction on floor (when running)
 # ------------------------------------------ #
 
 # GRAVITY ----- #
@@ -40,6 +41,7 @@ var jump_coyote_timer : float = 0
 var jump_buffer_timer : float = 0
 var momentum_timer: float = 0
 var is_jumping := false
+var edge_stop : float = 10000
 # ----------------------------------- #
 
 
@@ -66,16 +68,33 @@ func _physics_process(delta: float) -> void:
 func x_movement(delta: float) -> void:
 	x_dir = get_input()["x"]
 	
+	#edge of platform detection testing
+	if not ray.is_colliding() and is_on_floor() and x_dir != sign(velocity.x) and velocity.x != 0:
+		#print("collision")
+		#var origin = ray.global_transform.origin
+		#var collision_point = ray.get_collision_point()
+		#var distance = origin.distance_to(collision_point)
+		#if(distance > 1 and is_on_floor()):
+		velocity.x -= (delta * sign(velocity.x) * edge_stop)
+		if(abs(velocity.x) < 30):
+			velocity.x = 0
+	
+	
+	
+	
+	
 	# Stop if we're not doing movement inputs.
-	if x_dir == 0 and momentum_timer < 0:
-		velocity.x *= 0.92
+	if x_dir == 0 and momentum_timer < 0 and velocity.x != 0:
+		velocity.x -= (slide_speed * delta * sign(velocity.x))
+		if abs(velocity.x) < 30:
+			velocity.x = 0
 		# velocity.x = Vector2(velocity.x, 0).move_toward(Vector2(0,0), deceleration * delta).x
 		return
 	
 	#Slowly decelerate when on the ground, otherwise keep the same speed
 	# (This keeps our momentum gained from outside or slopes)
 	if x_dir != 0 and momentum_timer < 0 and abs(velocity.x) >= ground_max_speed and sign(velocity.x) == x_dir:
-		velocity.x *= 0.99
+		velocity.x -= (friction * delta * sign(velocity.x))
 		return
 	elif x_dir != 0 and momentum_timer > 0 and abs(velocity.x) >= max_speed and sign(velocity.x) == x_dir:
 		return
@@ -119,7 +138,7 @@ func jump_logic(_delta: float) -> void:
 		jump_buffer_timer = jump_buffer
 	
 	# Jump if grounded, there is jump input, and we aren't jumping already
-	if jump_coyote_timer > 0 and jump_buffer_timer > 0 and not is_jumping:
+	if jump_coyote_timer > 0 and not is_jumping and jump_buffer_timer > 0:
 		is_jumping = true
 		jump_coyote_timer = 0
 		jump_buffer_timer = 0
@@ -165,7 +184,7 @@ func apply_gravity(delta: float) -> void:
 	
 	velocity.y += applied_gravity
 
-
+#test
 func timers(delta: float) -> void:
 	# Using timer nodes here would mean unnececary functions and node calls
 	# This way everything is contained in just 1 script with no node requirements
