@@ -8,14 +8,15 @@ extends CharacterBody2D
 ## Except for separate air and ground acceleration, as I don't think it's necessary.
 
 @onready var ray = $detectionRay
+@onready var ray2 = $detectionRay2
 # BASIC MOVEMENT VARAIABLES ---------------- #
 var face_direction := 1
 var x_dir := 1
 
 @export var max_speed: float = 1250
 @export var ground_max_speed: float = 750 #was 560
-@export var acceleration: float = 50 #was 2880
-@export var turning_acceleration : float = 1 #was 9600 (this definitely doesn't work right atm)
+@export var acceleration: float = 4000 #was 2880
+@export var turning_acceleration : float = 2000 #was 9600 
 #@export var deceleration: float = 0.000001 #was 3200
 var slide_speed: float = 2000 #higher is less sliding
 var friction: float = 500 #higher is more friction on floor (when running)
@@ -27,11 +28,11 @@ var friction: float = 500 #higher is more friction on floor (when running)
 # ------------- #
 
 # JUMP VARAIABLES ------------------- #
-@export var jump_force : float = 1400
-@export var jump_cut : float = 0.25
-@export var jump_gravity_max : float = 500
-@export var jump_hang_treshold : float = 2.0
-@export var jump_hang_gravity_mult : float = 0.1
+@export var jump_force : float = 1200
+@export var jump_cut : float = 0.4
+@export var jump_gravity_max : float = 1000
+@export var jump_hang_treshold : float = 20.0 #was 2.0
+@export var jump_hang_gravity_mult : float = 0.1 #was .05
 # Timers
 @export var jump_coyote : float = 0.08
 @export var jump_buffer : float = 0.1
@@ -41,7 +42,7 @@ var jump_coyote_timer : float = 0
 var jump_buffer_timer : float = 0
 var momentum_timer: float = 0
 var is_jumping := false
-var edge_stop : float = 10000
+var edge_stop : float = 20000
 # ----------------------------------- #
 
 
@@ -69,16 +70,18 @@ func x_movement(delta: float) -> void:
 	x_dir = get_input()["x"]
 	
 	#edge of platform detection testing
-	if not ray.is_colliding() and is_on_floor() and x_dir != sign(velocity.x) and velocity.x != 0:
+	if not (ray.is_colliding() and ray2.is_colliding())  and is_on_floor() and x_dir != sign(velocity.x) and velocity.x != 0:
 		#print("collision")
 		#var origin = ray.global_transform.origin
 		#var collision_point = ray.get_collision_point()
 		#var distance = origin.distance_to(collision_point)
 		#if(distance > 1 and is_on_floor()):
 		if(velocity.x > abs(delta * edge_stop)):
+			print("edge slow")
 			velocity.x -= delta * sign(velocity.x) * edge_stop
 		else:
 			velocity.x = 0 
+			print("edge stop")
 			
 	
 	
@@ -86,29 +89,31 @@ func x_movement(delta: float) -> void:
 	
 	
 	# Stop if we're not doing movement inputs.
-	if x_dir == 0 and momentum_timer < 0 and velocity.x != 0:
+	if x_dir != sign(velocity.x) and momentum_timer < 0 and velocity.x != 0:
 		velocity.x -= (slide_speed * delta * sign(velocity.x))
-		if abs(velocity.x) < 30:
+		if abs(velocity.x) > abs(slide_speed * delta):
+			velocity.x -= (slide_speed * delta * sign(velocity.x))
+		else:
 			velocity.x = 0
 		# velocity.x = Vector2(velocity.x, 0).move_toward(Vector2(0,0), deceleration * delta).x
-		return
+		
 	
 	#Slowly decelerate when on the ground, otherwise keep the same speed
 	# (This keeps our momentum gained from outside or slopes)
 	if x_dir != 0 and momentum_timer < 0 and abs(velocity.x) >= ground_max_speed and sign(velocity.x) == x_dir:
 		velocity.x -= (friction * delta * sign(velocity.x))
-		return
-	elif x_dir != 0 and momentum_timer > 0 and abs(velocity.x) >= max_speed and sign(velocity.x) == x_dir:
-		return
+		
+	#elif x_dir != 0 and momentum_timer > 0 and abs(velocity.x) >= max_speed and sign(velocity.x) == x_dir:
+	#	return
 		
 	# Are we turning?
 	# Deciding between acceleration and turn_acceleration
 	#var accel_rate : float = acceleration if sign(velocity.x) == x_dir else turning_acceleration
 	
 	# Accelerate
-	if sign(velocity.x) == x_dir:
+	if sign(velocity.x) == x_dir or velocity.x == 0:
 		velocity.x += x_dir * acceleration * delta
-	else:
+	elif sign(velocity.x) * x_dir < 0:
 		velocity.x += x_dir * delta * turning_acceleration
 	
 	set_direction(x_dir) # This is purely for visuals
