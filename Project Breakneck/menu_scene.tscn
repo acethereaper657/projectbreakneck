@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://btdhup10w06hs" path="res://BG.tscn" id="2_t35fb"]
 
 [node name="MenuScene" type="Node2D"]
+process_mode = 3
 script = ExtResource("1_210kh")
 
 [node name="Background" parent="." instance=ExtResource("2_t35fb")]
