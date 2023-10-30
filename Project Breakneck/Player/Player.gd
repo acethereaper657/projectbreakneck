@@ -15,7 +15,7 @@ var x_dir := 1
 
 @export var max_speed: float = 1250
 @export var ground_max_speed: float = 750 #was 560
-@export var acceleration: float = 4000 #was 2880
+@export var acceleration: float = 1500 #was 2880
 @export var turning_acceleration : float = 2000 #was 9600 
 #@export var deceleration: float = 0.000001 #was 3200
 var slide_speed: float = 2000 #higher is less sliding
